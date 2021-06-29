@@ -1,7 +1,10 @@
 var express = require('express');
 var router = express.Router();
+var fs = require('fs');
 const ConnectService = require('../ConnectService')
 const arj = require('api-response-json');
+var multer = require('multer')
+var upload = multer({})
 
 /* GET project listing. */
 router.get('/project', function (req, res, next) {
@@ -44,7 +47,7 @@ router.get('/project', function (req, res, next) {
 });
 
 // สร้าง project
-router.post('/project', function (req, res, next) {
+router.post('/project', upload.single('file'), function (req, res, next) {
   const body = req.body
 
   // `project_id` VARCHAR(45) NULL,
@@ -56,39 +59,58 @@ router.post('/project', function (req, res, next) {
   // `url` TEXT NULL,
 
   if (!body.project_id) {
-    arj.notFound(res, false, "ไม่มี project_id", {})
+    arj.badRequest(res, false, "ไม่มี project_id", {})
   } else if (!body.title) {
-    arj.notFound(res, false, "ไม่มี title", {})
+    arj.badRequest(res, false, "ไม่มี title", {})
   } else if (!body.detail) {
-    arj.notFound(res, false, "ไม่มี detail", {})
+    arj.badRequest(res, false, "ไม่มี detail", {})
   } else if (!body.type) {
-    arj.notFound(res, false, "ไม่มี type", {})
+    arj.badRequest(res, false, "ไม่มี type", {})
   } else if (!body.abstract) {
-    arj.notFound(res, false, "ไม่มี abstract", {})
+    arj.badRequest(res, false, "ไม่มี abstract", {})
   } else if (!body.year) {
-    arj.notFound(res, false, "ไม่มี year", {})
-  } else if (!body.url) {
-    arj.notFound(res, false, "ไม่มี file", {})
+    arj.badRequest(res, false, "ไม่มี year", {})
+  } else if (!req.file) {
+    arj.badRequest(res, false, "ไม่มี file", {})
+  } else if (!body.user_id) {
+    arj.badRequest(res, false, "ไม่มี user_id", {})
   } else {
+    console.log(req.file);
     ConnectService().then((service) => {
-      let createUser = `INSERT INTO user (project_id, title, detail, type, abstract,year,url)
-    VALUES ('${body.project_id}', '${body.title}', '${body.detail}', '${body.type}', '${body.abstract}', '${body.year}','${body.url}');`
-      service.mysql.query(createUser, function (error, results, fields) {
+      let createProject = `INSERT INTO project (project_id, title, detail, type, abstract,year,url,user_id)
+VALUES ('${body.project_id}', '${body.title}', '${body.detail}', '${body.type}', '${body.abstract}', '${body.year}','uploads/${body.project_id}.pdf','${body.user_id}');`
+      service.mysql.query(createProject, function (error, results, fields) {
         if (error) {
           arj.internalServerError(res, false, "internal Server Error", error)
         } else {
-          arj.created(res, true, 'create project ok!', results)
+          const data = req.file.buffer.toString('base64');
+          fs.writeFile(
+            `public/uploads/${body.project_id}.pdf`,
+            data, { encoding: 'base64' }, function (err) {
+              if (err) {
+                arj.internalServerError(res, false, "internal Server Error", err)
+              }
+              console.log('File created');
+              arj.created(res, true, 'create project ok!', results)
+            }
+          );
+
+
         }
       })
     }).catch(err => {
       arj.internalServerError(res, false, "internal Server Error", err)
     })
 
+
+
+
+
   }
 });
 
 // update project
-router.put('/project', function (req, res, next) {
+router.put('/project', upload.single('file'), function (req, res, next) {
   const body = req.body
   const query = req.query;
 

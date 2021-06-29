@@ -4,15 +4,17 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors')
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var contactUsRouter = require('./routes/contact-us');
 var loginRouter = require('./routes/login')
+var adminLoginRouter = require('./routes/adminLogin')
 var projectRouter = require('./routes/project')
 var registerRouter = require('./routes/register')
 var searchRouter = require('./routes/search')
 
-var api = [contactUsRouter, loginRouter, projectRouter, registerRouter, searchRouter]
+var api = [contactUsRouter, loginRouter, projectRouter, registerRouter, searchRouter, adminLoginRouter]
 var app = express();
 
 // view engine setup

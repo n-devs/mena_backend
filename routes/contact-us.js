@@ -8,15 +8,15 @@ router.post('/contact-us', function (req, res, next) {
   const body = req.body;
 
   if (!body.fullName) {
-    arj.notFound(res, false, "ไม่มี fullName", {})
+    arj.badRequest(res, false, "ไม่มี fullName", {})
   } else if (!body.phoneNumber) {
-    arj.notFound(res, false, "ไม่มี phoneNumber", {})
+    arj.badRequest(res, false, "ไม่มี phoneNumber", {})
   } else if (!body.email) {
-    arj.notFound(res, false, "ไม่มี email", {})
+    arj.badRequest(res, false, "ไม่มี email", {})
   } else if (!body.profession) {
-    arj.notFound(res, false, "ไม่มี profession", {})
+    arj.badRequest(res, false, "ไม่มี profession", {})
   } else if (!body.message) {
-    arj.notFound(res, false, "ไม่มี message", {})
+    arj.badRequest(res, false, "ไม่มี message", {})
   } else {
     ConnectService().then((service) => {
       let creatContactUs = `INSERT INTO user (fullName, phoneNumber, email, profession, message)

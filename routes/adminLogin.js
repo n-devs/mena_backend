@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const ConnectService = require('../ConnectService')
 
 /* login api. */
-router.post('/login', function (req, res, next) {
+router.post('/admin/login', function (req, res, next) {
   const body = req.body;
   if (!body.username) {
     arj.badRequest(res, false, "ไม่มี username", {})
@@ -13,7 +13,7 @@ router.post('/login', function (req, res, next) {
     arj.badRequest(res, false, "ไม่มี password", {})
   } else {
     ConnectService().then((service) => {
-      let sqlCheckUser = `select * from user where username = '${body.username}' and privilege_type = 1`
+      let sqlCheckUser = `select * from user where username = '${body.username}' and privilege_type = 0`
       service.mysql.query(sqlCheckUser, function (error, results, fields) {
         if (error) {
           arj.internalServerError(res, false, "internal Server Error", error)

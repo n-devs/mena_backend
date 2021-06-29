@@ -5,9 +5,9 @@ async function ConnectService() {
     return await new Promise((resolve, reject) => {
 
         const db = mysql.createConnection({
-            host: 'example.org',
-            user: 'bob',
-            password: 'secret',
+            host: 'localhost',
+            user: 'root',
+            password: '6e2e70736b',
             database: 'manage_project'
         });
 
